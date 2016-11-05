@@ -27,14 +27,6 @@ module.exports = function () {
       analyze: function(analyzeData) {
         var result = [];
         var self = this;
-        // {frontItem: {
-        //   type: ["10"],
-        //   support: 0.5
-        // }, endItem: {
-        //   type: ['10','20'],
-        //   support: 0.2
-        // }, support: 0.2/0.5}
-        console.log(analyzeData);
         analyzeData.forEach(function(item, index) {
           var typeLen = item.type.length;
           // 遍历项数大于等于2的项集，不处理一项集
@@ -43,29 +35,57 @@ module.exports = function () {
             //
             var comArray = combinations(item.type);
             comArray.forEach(function(comItem, i) {
+              // 排除前向与当前项相同的数据
+              if (comItem.length >= item.type.length ) {
+                return;
+              }
               // 获取comItem的支持度
               var itemSupport = self.findSupport(comItem, analyzeData);
-              console.log(itemSupport);
+              if (!itemSupport) {
+                return console.log(`${comItem}找不到支持度，确认数据是否错误。`);
+              }
+
               // 找出后项
+              var endItem = self.findEndItem(comItem, item.type);
+              // console.log(comItem, endItem, item.type);
+
+              // 找出后项的支持度
+              var endItemSupport = self.findSupport(endItem, analyzeData);
+              if (!endItemSupport) {
+                return console.log(`找不到后项${endItem}的支持度，前项为${comItem}, 整项为${item.type}`);
+              }
               // 得出结果
+              var calcSupport = item.support / itemSupport;
+              result.push({
+                item: item.type,
+                itemSupport: item.support,
+                frontItem: comItem,
+                frontItemSupport: itemSupport,
+                endItem: endItem,
+                endItemSupport: endItemSupport,
+                calcSupport: calcSupport
+              })
             });
           }
         });
+        return result;
       },
       findSupport: function(comItem, analyzeData) {
         var toStr = comItem.join('-');
         var findItem = _.find(analyzeData, function(item) {
           return item.type.join('-') === toStr;
         });
+        if (!findItem || !findItem.support) {
+          return null;
+        }
         return findItem.support;
       },
       findEndItem: function(frontItem, item) {
-        var frontLastItem = frontItem[frontItem.length - 1];
-        var index = item.indexOf(frontLastItem);
-        if (index < 0) {
-          return console.log("${frontItem}前向${frontLastItem}的最后一个item在${item}中找不到");
+        if (!_.isArray(frontItem) || !_.isArray(item)) {
+          return console.log(`${frontItem}或${item}不是数组，请检查数据是否有误`);
         }
-        var endItem = item.slice(index + 1, item.length);
+        var endItem = _.difference(item, frontItem);
+
         return endItem
       },
     };
