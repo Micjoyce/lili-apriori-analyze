@@ -12,6 +12,7 @@
   "dependencies": {
     "csv2json": "^1.1.0",
     "json2csv": "^3.7.1",
-    "lodash": "^4.16.6"
+    "lodash": "^4.16.6",
+    "yargs": "^6.3.0"
   }
 }
