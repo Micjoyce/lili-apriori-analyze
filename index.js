@@ -3,19 +3,19 @@
 //
 // console.log(combinations(myArray));
 //
-// var csv2json = require('csv2json');
+var csv2json = require('csv2json');
 // var _ = require('lodash');
 var fs = require('fs');
 var util = require('./util')();
 var json2csv = require('json2csv');
 //
-// // fs.createReadStream('analyze.csv')
-// //   .pipe(csv2json({
-// //     // Defaults to comma.
-// //     separator: ','
-// //   }))
-// //   .pipe(fs.createWriteStream('data.json'));
-//
+// fs.createReadStream('analyze.csv')
+//   .pipe(csv2json({
+//     // Defaults to comma.
+//     separator: ','
+//   }))
+//   .pipe(fs.createWriteStream('data.json'));
+
 
 // 转换数据
 fs.readFile('data.json', 'utf8', function(err, data) {
@@ -34,6 +34,4 @@ fs.readFile('data.json', 'utf8', function(err, data) {
         if (err) throw err;
         console.log('analyze-result saved');
     });
-
-
 });
